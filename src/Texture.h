@@ -5,5 +5,5 @@
 class Texture
 {
 public:
-    static GLuint create_texture(const std::string& filepath, GLint image_format = GL_RGB);
+    static GLuint CreateTexture(const std::string& filepath, GLint imageFormat = GL_RGB);
 };
