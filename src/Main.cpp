@@ -53,9 +53,10 @@ int main()
 
         // uncomment this call to draw in wireframe polygons.
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        auto texture1 = Texture::CreateTexture("resources/textures/planks.png");
-        auto texture2 = Texture::CreateTexture("resources/textures/awesomeface.png", GL_RGBA);
+        
+        GLuint texture1, texture2;
+        Texture("resources/textures/planks.png", texture1);
+        Texture("resources/textures/awesomeface.png", texture2, GL_RGBA);
 
         // Use shader before setting uniforms
         shader.Use();
@@ -89,7 +90,6 @@ int main()
         glDeleteVertexArrays(1, &vao);
         glDeleteBuffers(1, &vbo);
         glDeleteBuffers(1, &ebo);
-        shader.DeleteProgram();
     }
     catch (std::exception& exception)
     {

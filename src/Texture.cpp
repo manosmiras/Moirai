@@ -6,11 +6,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "lib/stb_image.h"
 
-GLuint Texture::CreateTexture(const std::string& filepath, const GLint imageFormat)
+Texture::Texture(const std::string& filepath, GLuint& textureId, GLint imageFormat)
 {
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -31,5 +30,4 @@ GLuint Texture::CreateTexture(const std::string& filepath, const GLint imageForm
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
-    return texture;
 }

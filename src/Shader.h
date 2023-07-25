@@ -7,8 +7,8 @@ class Shader
 public:
     GLuint id;
     Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+    ~Shader();
     void Use();
-    void DeleteProgram();
     void SetBool(const std::string &name, const bool value) const;
     void SetInt(const std::string &name, const int value) const;
     void SetFloat(const std::string &name, const float value) const;

@@ -33,14 +33,14 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     glDeleteShader(fragment);
 }
 
+Shader::~Shader()
+{
+    glDeleteProgram(id);
+}
+
 void Shader::Use()
 {
     glUseProgram(id);
-}
-
-void Shader::DeleteProgram()
-{
-    glDeleteProgram(id);
 }
     
 void Shader::SetBool(const std::string &name, const bool value) const
@@ -68,7 +68,9 @@ void Shader::CheckCompilationErrors(const GLuint shader, const std::string& type
         if (!success)
         {
             glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << std::endl;
+            std::stringstream stream;
+            stream << "Shader compilation error of type " << type;
+            throw std::exception(stream.str().c_str());
         }
     }
     else
@@ -77,33 +79,25 @@ void Shader::CheckCompilationErrors(const GLuint shader, const std::string& type
         if (!success)
         {
             glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-            std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << std::endl;
+            std::stringstream stream;
+            stream << "Program linking error of type " << type;
+            throw std::exception(stream.str().c_str());
         }
     }
 }
 
 std::string Shader::ReadFileContents(const std::string& filepath)
 {
-    std::string contents;
     std::ifstream file;
-
-    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try 
-    {
-        // open files
-        file.open(filepath);
-        std::stringstream stream;
-        // read file's buffer contents into streams
-        stream << file.rdbuf();
-        // close file handlers
-        file.close();
-        // convert stream into string
-        contents = stream.str();
-    }
-    catch (std::ifstream::failure& e)
-    {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
-    }
+    // open files
+    file.open(filepath);
+    std::stringstream stream;
+    // read file's buffer contents into streams
+    stream << file.rdbuf();
+    // close file handlers
+    file.close();
+    // convert stream into string
+    std::string contents = stream.str();
         
     return contents;
 }
