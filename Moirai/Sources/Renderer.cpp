@@ -6,7 +6,7 @@
 
 Renderer::Renderer()
 {
-    shader = std::make_unique<Shader>("resources/shaders/shader.vert", "resources/shaders/shader.frag");
+    shader = std::make_unique<Shader>("../Moirai/Shaders/shader.vert", "../Moirai/Shaders/shader.frag");
     float vertices[] = {
         // positions          // colors           // texture coords
         0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
@@ -48,8 +48,8 @@ Renderer::Renderer()
 
     GLuint texture1, texture2;
     
-    Texture("resources/textures/planks.png", texture1);
-    Texture("resources/textures/awesomeface.png", texture2, GL_RGBA);
+    Texture("../Moirai/Textures/planks.png", texture1);
+    Texture("../Moirai/Textures/awesomeface.png", texture2, GL_RGBA);
     
     textures.insert(std::pair<GLuint, int>(texture1, GL_TEXTURE0));
     textures.insert(std::pair<GLuint, int>(texture2, GL_TEXTURE1));
