@@ -1,7 +1,6 @@
 ﻿#include "Shader.h"
 
 #include <fstream>
-#include <iostream>
 #include <ostream>
 #include <sstream>
 
@@ -12,6 +11,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     const char* vertexCode = vertexContent.c_str();
     const std::string fragmentContent = ReadFileContents(fragmentPath);
     const char* fragmentCode = fragmentContent.c_str();
+
     // Compile vertex shader
     const auto vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vertexCode, nullptr);
@@ -42,20 +42,20 @@ void Shader::Use()
 {
     glUseProgram(id);
 }
-    
-void Shader::SetBool(const std::string &name, const bool value) const
-{         
-    glUniform1i(glGetUniformLocation(id, name.c_str()), static_cast<int>(value)); 
+
+void Shader::SetBool(const std::string& name, const bool value) const
+{
+    glUniform1i(glGetUniformLocation(id, name.c_str()), static_cast<int>(value));
 }
-    
-void Shader::SetInt(const std::string &name, const int value) const
-{ 
-    glUniform1i(glGetUniformLocation(id, name.c_str()), value); 
+
+void Shader::SetInt(const std::string& name, const int value) const
+{
+    glUniform1i(glGetUniformLocation(id, name.c_str()), value);
 }
-    
-void Shader::SetFloat(const std::string &name, const float value) const
-{ 
-    glUniform1f(glGetUniformLocation(id, name.c_str()), value); 
+
+void Shader::SetFloat(const std::string& name, const float value) const
+{
+    glUniform1f(glGetUniformLocation(id, name.c_str()), value);
 }
 
 void Shader::CheckCompilationErrors(const GLuint shader, const std::string& type)
@@ -68,9 +68,7 @@ void Shader::CheckCompilationErrors(const GLuint shader, const std::string& type
         if (!success)
         {
             glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            std::stringstream stream;
-            stream << "Shader compilation error of type " << type;
-            throw std::exception(stream.str().c_str());
+            throw std::exception(infoLog);
         }
     }
     else
@@ -79,9 +77,7 @@ void Shader::CheckCompilationErrors(const GLuint shader, const std::string& type
         if (!success)
         {
             glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-            std::stringstream stream;
-            stream << "Program linking error of type " << type;
-            throw std::exception(stream.str().c_str());
+            throw std::exception(infoLog);
         }
     }
 }
@@ -89,15 +85,17 @@ void Shader::CheckCompilationErrors(const GLuint shader, const std::string& type
 std::string Shader::ReadFileContents(const std::string& filepath)
 {
     std::ifstream file;
-    // open files
     file.open(filepath);
+
+    std::string fileContents;
     std::stringstream stream;
-    // read file's buffer contents into streams
-    stream << file.rdbuf();
-    // close file handlers
-    file.close();
-    // convert stream into string
-    std::string contents = stream.str();
-        
-    return contents;
+    while (getline(file, fileContents))
+    {
+        // Ignore BOM from UTF-8 files
+        if (fileContents.compare(0, 3, "\xEF\xBB\xBF") != 0) 
+        {
+            stream << fileContents << "\n";
+        }
+    }
+    return stream.str();
 }

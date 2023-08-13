@@ -34,3 +34,6 @@
 .idea
 .vs
 x64
+
+# CMake build directory
+[Bb]uild/

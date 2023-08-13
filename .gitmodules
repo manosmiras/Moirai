@@ -1,0 +1,20 @@
+[submodule "Moirai/Vendor/assimp"]
+	path = Moirai/Vendor/assimp
+	url = https://github.com/assimp/assimp.git
+	branch = master
+[submodule "Moirai/Vendor/glad"]
+	path = Moirai/Vendor/glad
+	url = https://github.com/Dav1dde/glad.git
+	branch = c
+[submodule "glfw"]
+	path = Moirai/Vendor/glfw
+	url = https://github.com/glfw/glfw.git
+	branch = master
+[submodule "glm"]
+	path = Moirai/Vendor/glm
+	url = https://github.com/g-truc/glm.git
+	branch = master
+[submodule "Moirai/Vendor/stb"]
+	path = Moirai/Vendor/stb
+	url = https://github.com/nothings/stb.git
+	branch = master
