@@ -8,15 +8,15 @@ int main()
 {
     try
     {
-        Window window;
-        Renderer renderer;
+        std::shared_ptr<Window> window = std::make_shared<Window>();
+        
+        Renderer renderer(window.get());
 
         // Engine loop
-        while (!window.ShouldClose())
+        while (!window->ShouldClose())
         {
-            window.PreRender();
             renderer.Render();
-            window.PostRender();
+            window->Update();
         }
     }
     catch (std::exception& exception)

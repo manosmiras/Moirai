@@ -17,7 +17,10 @@ Window::Window()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(800, 600, "Moirai", nullptr, nullptr);
+    width = 800;
+    height = 600;
+    
+    window = glfwCreateWindow(width, height, "Moirai", nullptr, nullptr);
     if (window == nullptr)
     {
         glfwTerminate();
@@ -36,21 +39,22 @@ Window::~Window()
     glfwTerminate();
 }
 
-void Window::PreRender()
+void Window::Update()
 {
+    glfwSwapBuffers(window);
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
     }
-}
-
-void Window::PostRender()
-{
-    glfwSwapBuffers(window);
     glfwPollEvents();
 }
 
 bool Window::ShouldClose()
 {
     return glfwWindowShouldClose(window);
+}
+
+float Window::GetAspectRatio()
+{
+    return static_cast<float>(width) / static_cast<float>(height);
 }

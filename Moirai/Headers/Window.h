@@ -7,7 +7,9 @@ public:
     GLFWwindow* window;
     Window();
     ~Window();
-    void PostRender();
-    void PreRender();
+    void Update();
     bool ShouldClose();
+    float GetAspectRatio();
+    int width;
+    int height;
 };

@@ -8,6 +8,7 @@
 
 Texture::Texture(const std::string& filepath, GLuint& textureId, GLint imageFormat)
 {
+    stbi_set_flip_vertically_on_load(true);  
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // set the texture wrapping parameters
@@ -18,7 +19,7 @@ Texture::Texture(const std::string& filepath, GLuint& textureId, GLint imageForm
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
     int width, height, channelsInFile;
-
+    
     unsigned char *data = stbi_load(filepath.c_str(), &width, &height, &channelsInFile, 0);
     if (data)
     {
