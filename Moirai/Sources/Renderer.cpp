@@ -7,9 +7,10 @@
 
 #include "GLFW/glfw3.h"
 
-Renderer::Renderer(Window* window)
+Renderer::Renderer(Window* window, Camera* camera)
 {
     this->window = window;
+    this->camera = camera;
     shader = std::make_unique<Shader>("../Moirai/Shaders/shader.vert", "../Moirai/Shaders/shader.frag");
 
     float vertices[] = {
@@ -97,7 +98,7 @@ Renderer::Renderer(Window* window)
     
     shader->SetInt("texture1", 0);
     shader->SetInt("texture2", 1);
-
+    
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -108,26 +109,18 @@ Renderer::~Renderer()
     glDeleteBuffers(1, &ebo);
 }
 
-void Renderer::Render()
+void Renderer::Render(float deltaTime)
 {
     glm::mat4 model(1.0f);
-    glm::mat4 view(1.0f);
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), window->GetAspectRatio(), 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera->Zoom), window->GetAspectRatio(), 0.1f, 100.0f);
     
-    model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0.5f, 1.0f, 1.0f)); 
-    view = glm::translate(view, glm::vec3(0,0,-3));
+    model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0.5f, 1.0f, 1.0f));
     
+    auto view = camera->GetViewMatrix();
     
-    
-
-    auto modelLoc = glGetUniformLocation(shader->id, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));    
-    
-    auto viewLoc = glGetUniformLocation(shader->id, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-    auto projectionLoc = glGetUniformLocation(shader->id, "projection");
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    shader->SetMat4("model", model);
+    shader->SetMat4("view", view);
+    shader->SetMat4("projection", projection);
     
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -142,5 +135,4 @@ void Renderer::Render()
     // render box
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

@@ -1,7 +1,6 @@
 ﻿#include "Window.h"
-
-#include <iostream>
 #include <ostream>
+#include "Camera.h"
 
 void FramebufferSizeCallback(GLFWwindow* window, const int width, const int height)
 {
@@ -10,8 +9,30 @@ void FramebufferSizeCallback(GLFWwindow* window, const int width, const int heig
     glViewport(0, 0, width, height);
 }
 
-Window::Window()
+void Window::MouseCallback(double xposIn, double yposIn)
 {
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera->ProcessMouseMovement(xoffset, yoffset);
+}
+
+Window::Window(Camera* camera)
+{
+    this->camera = camera;
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -30,7 +51,11 @@ Window::Window()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
     gladLoadGL();
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, width, height);
+
+    lastX = static_cast<float>(width) / 2.0f;
+    lastY = static_cast<float>(height) / 2.0f;
+    glfwSetCursorPos(window, lastX, lastY);
 }
 
 Window::~Window()
@@ -39,13 +64,27 @@ Window::~Window()
     glfwTerminate();
 }
 
-void Window::Update()
+void Window::Update(float deltaTime)
 {
     glfwSwapBuffers(window);
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
     }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera->ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera->ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera->ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera->ProcessKeyboard(RIGHT, deltaTime);
+
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    MouseCallback(x, y);
+    
     glfwPollEvents();
 }
 

@@ -8,15 +8,22 @@ int main()
 {
     try
     {
-        std::shared_ptr<Window> window = std::make_shared<Window>();
+        auto camera = std::make_shared<Camera>();
+        auto window = std::make_shared<Window>(camera.get());
         
-        Renderer renderer(window.get());
+        Renderer renderer(window.get(), camera.get());
+        
+        float deltaTime;	// time between current frame and last frame
+        float lastFrame = 0.0f;
 
         // Engine loop
         while (!window->ShouldClose())
         {
-            renderer.Render();
-            window->Update();
+            const auto currentFrame = static_cast<float>(glfwGetTime());
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+            renderer.Render(deltaTime);
+            window->Update(deltaTime);
         }
     }
     catch (std::exception& exception)
