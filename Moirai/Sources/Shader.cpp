@@ -98,11 +98,12 @@ std::string Shader::ReadFileContents(const std::string& filepath)
     std::stringstream stream;
     while (getline(file, fileContents))
     {
-        // Ignore BOM from UTF-8 files
-        if (fileContents.compare(0, 3, "\xEF\xBB\xBF") != 0) 
+        // Remove BOM from UTF-8 files
+        if (fileContents.compare(0, 3, "\xEF\xBB\xBF") == 0) 
         {
-            stream << fileContents << "\n";
+            fileContents = fileContents.substr(3, fileContents.size());
         }
+        stream << fileContents << "\n";
     }
     return stream.str();
 }
