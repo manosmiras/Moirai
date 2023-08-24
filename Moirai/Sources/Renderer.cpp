@@ -120,11 +120,22 @@ void Renderer::Render(float deltaTime)
     auto view = camera->GetViewMatrix();
 
     phongShader->Use();
-    phongShader->SetVec3("objectColor", glm::vec3(1.0f,0.5f,0.31f));
-    phongShader->SetVec3("lightColor",glm::vec3(1.0f,1.0f,1.0f));
-    phongShader->SetVec3("lightPosition", lightPosition);
+    // positions
+    phongShader->SetVec3("light.position", lightPosition);
     phongShader->SetVec3("viewPosition", camera->Position);
-    
+
+    // material values
+    phongShader->SetVec3("material.ambient", glm::vec3(	0.24725f, 0.1995f, 0.0745f));
+    phongShader->SetVec3("material.diffuse", glm::vec3(0.75164f, 0.60648f, 0.22648f));
+    phongShader->SetVec3("material.specular",glm::vec3(0.628281f, 0.555802f, 0.366065f));
+    phongShader->SetFloat("material.shininess", 51.2f);
+
+    // light values
+    phongShader->SetVec3("light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f));
+    phongShader->SetVec3("light.diffuse",  glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
+    phongShader->SetVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f)); 
+
+    // mvp
     phongShader->SetMat4("model", model);
     phongShader->SetMat4("view", view);
     phongShader->SetMat4("projection", projection);
