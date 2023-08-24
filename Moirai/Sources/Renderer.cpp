@@ -123,6 +123,7 @@ void Renderer::Render(float deltaTime)
     phongShader->SetVec3("objectColor", glm::vec3(1.0f,0.5f,0.31f));
     phongShader->SetVec3("lightColor",glm::vec3(1.0f,1.0f,1.0f));
     phongShader->SetVec3("lightPosition", lightPosition);
+    phongShader->SetVec3("viewPosition", camera->Position);
     
     phongShader->SetMat4("model", model);
     phongShader->SetMat4("view", view);
