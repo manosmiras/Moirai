@@ -94,15 +94,17 @@ Renderer::Renderer(Window* window, Camera* camera)
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    GLuint diffuse;
+    GLuint diffuse, specular;
     
     Texture("../Moirai/Textures/container.png", diffuse);
+    Texture("../Moirai/Textures/container_specular.png", specular);
     
     textures.insert(std::pair<GLuint, int>(diffuse, GL_TEXTURE0));
+    textures.insert(std::pair<GLuint, int>(specular, GL_TEXTURE1));
     
     phongShader->Use();
     phongShader->SetInt("material.diffuse", 0);
-    
+    phongShader->SetInt("material.specular", 1);
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -121,7 +123,7 @@ void Renderer::Render(float deltaTime)
     glm::mat4 model(1.0f);
     glm::mat4 projection = glm::perspective(glm::radians(camera->Zoom), window->GetAspectRatio(), 0.1f, 100.0f);
     
-    model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0.5f, 1.0f, 1.0f));
+    model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0, 1.0f, 1.0f));
     
     auto view = camera->GetViewMatrix();
 
