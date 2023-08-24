@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-Texture::Texture(const std::string& filepath, GLuint& textureId, GLint imageFormat)
+Texture::Texture(const std::string& filepath, GLuint& textureId)
 {
     stbi_set_flip_vertically_on_load(true);  
     glGenTextures(1, &textureId);
@@ -23,6 +23,14 @@ Texture::Texture(const std::string& filepath, GLuint& textureId, GLint imageForm
     unsigned char *data = stbi_load(filepath.c_str(), &width, &height, &channelsInFile, 0);
     if (data)
     {
+        GLenum imageFormat;
+        if (channelsInFile == 1)
+            imageFormat = GL_RED;
+        else if (channelsInFile == 3)
+            imageFormat = GL_RGB;
+        else if (channelsInFile == 4)
+            imageFormat = GL_RGBA;
+        
         glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, width, height, 0, imageFormat, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }

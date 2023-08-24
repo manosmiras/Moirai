@@ -5,5 +5,5 @@
 class Texture
 {
 public:
-    Texture(const std::string& filepath, GLuint &textureId, GLint imageFormat = GL_RGB);
+    Texture(const std::string& filepath, GLuint &textureId);
 };
