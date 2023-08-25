@@ -4,12 +4,13 @@
 
 #include "Camera.h"
 #include "Shader.h"
+#include "UserInterface.h"
 #include "Window.h"
 
 class Renderer
 {
 public:
-    Renderer(Window* window, Camera* camera);
+    Renderer(Window* window, Camera* camera, UserInterface* userInterface);
     ~Renderer();
     std::unique_ptr<Shader> phongShader;
     std::unique_ptr<Shader> lightSourceShader;
@@ -18,5 +19,6 @@ public:
     void Render(float deltaTime);
     Window* window;
     Camera* camera;
+    UserInterface* userInterface;
     glm::vec3 lightPosition;
 };

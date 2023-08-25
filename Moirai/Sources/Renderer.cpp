@@ -7,11 +7,12 @@
 
 #include "GLFW/glfw3.h"
 
-Renderer::Renderer(Window* window, Camera* camera)
+Renderer::Renderer(Window* window, Camera* camera, UserInterface* userInterface)
 {
     lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
     this->window = window;
     this->camera = camera;
+    this->userInterface = userInterface;
     phongShader = std::make_unique<Shader>("../Moirai/Shaders/TexturePhong.vert", "../Moirai/Shaders/TexturePhong.frag");
     lightSourceShader = std::make_unique<Shader>("../Moirai/Shaders/LightSource.vert", "../Moirai/Shaders/LightSource.frag");
     
@@ -135,10 +136,16 @@ void Renderer::Render(float deltaTime)
     phongShader->SetVec3("material.specular",glm::vec3(0.5f, 0.5f, 0.5f));
     phongShader->SetFloat("material.shininess", 64.0f);
 
+    const auto lightColor = glm::vec3(userInterface->lightColor[0],  userInterface->lightColor[1],  userInterface->lightColor[2]);
+
+    auto ambient = lightColor * 0.2f;
+    auto diffuse = lightColor * 0.5f;
+    auto specular = lightColor;
+
     // light values
-    phongShader->SetVec3("light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f));
-    phongShader->SetVec3("light.diffuse",  glm::vec3(0.5f, 0.5f, 0.5f));
-    phongShader->SetVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f)); 
+    phongShader->SetVec3("light.ambient",  ambient);
+    phongShader->SetVec3("light.diffuse",  diffuse);
+    phongShader->SetVec3("light.specular", specular); 
 
     // mvp
     phongShader->SetMat4("model", model);
@@ -162,6 +169,7 @@ void Renderer::Render(float deltaTime)
     model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
 
     lightSourceShader->Use();
+    lightSourceShader->SetVec3("lightColor", lightColor);
     lightSourceShader->SetMat4("model", model);
     lightSourceShader->SetMat4("view", view);
     lightSourceShader->SetMat4("projection", projection);

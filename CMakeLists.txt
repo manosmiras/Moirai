@@ -25,15 +25,23 @@ include_directories(Moirai/Headers/
                     Moirai/Vendor/glad/include/
                     Moirai/Vendor/glfw/include/
                     Moirai/Vendor/glm/
-                    Moirai/Vendor/stb/)
+                    Moirai/Vendor/stb/
+		    Moirai/Vendor/imgui/)
 
-file(GLOB VENDORS_SOURCES Moirai/Vendor/glad/src/glad.c)
+file(GLOB VENDORS_SOURCES Moirai/Vendor/glad/src/glad.c
+			  Moirai/Vendor/imgui/*.cpp
+			  Moirai/Vendor/imgui/*.h
+			  Moirai/Vendor/imgui/backends/imgui_impl_glfw.cpp
+		    	  Moirai/Vendor/imgui/backends/imgui_impl_glfw.h
+			  Moirai/Vendor/imgui/backends/imgui_impl_opengl3.cpp
+			  Moirai/Vendor/imgui/backends/imgui_impl_opengl3.h)
 file(GLOB PROJECT_HEADERS Moirai/Headers/*.h)
 file(GLOB PROJECT_SOURCES Moirai/Sources/*.cpp)
 file(GLOB PROJECT_SHADERS Moirai/Shaders/*.comp
                           Moirai/Shaders/*.frag
                           Moirai/Shaders/*.geom
                           Moirai/Shaders/*.vert)
+
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
                          .gitattributes
