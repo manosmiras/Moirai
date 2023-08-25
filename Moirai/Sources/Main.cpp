@@ -9,9 +9,9 @@ int main()
 {
     try
     {
-        auto camera = std::make_shared<Camera>();
-        auto window = std::make_shared<Window>(camera.get());
-        auto userInterface = std::make_shared<UserInterface>(window.get());
+        auto camera = std::make_unique<Camera>();
+        auto window = std::make_unique<Window>(camera.get());
+        auto userInterface = std::make_unique<UserInterface>(window.get());
         
         Renderer renderer(window.get(), camera.get(), userInterface.get());
 
