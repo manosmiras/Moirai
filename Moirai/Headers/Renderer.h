@@ -20,5 +20,4 @@ public:
     Window* window;
     Camera* camera;
     UserInterface* userInterface;
-    glm::vec3 lightPosition;
 };

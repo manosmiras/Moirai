@@ -9,14 +9,12 @@
 
 Renderer::Renderer(Window* window, Camera* camera, UserInterface* userInterface)
 {
-    lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
     this->window = window;
     this->camera = camera;
     this->userInterface = userInterface;
     phongShader = std::make_unique<Shader>("../Moirai/Shaders/TexturePhong.vert", "../Moirai/Shaders/TexturePhong.frag");
-    lightSourceShader = std::make_unique<Shader>("../Moirai/Shaders/LightSource.vert", "../Moirai/Shaders/LightSource.frag");
     
-    float vertices[] = {
+    float cubeVertices[] = {
         // positions          // normals           // texture coords
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
@@ -65,7 +63,7 @@ Renderer::Renderer(Window* window, Camera* camera, UserInterface* userInterface)
     glGenBuffers(1, &vbo);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
     glBindVertexArray(cubeVao);
 
@@ -124,19 +122,17 @@ void Renderer::Render(float deltaTime)
     glm::mat4 model(1.0f);
     glm::mat4 projection = glm::perspective(glm::radians(camera->Zoom), window->GetAspectRatio(), 0.1f, 100.0f);
     
-    model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0, 1.0f, 1.0f));
-    
     auto view = camera->GetViewMatrix();
 
     phongShader->Use();
-    // positions
-    phongShader->SetVec3("light.position", lightPosition);
+
+    phongShader->SetVec3("light.direction", userInterface->lightDirection);
     phongShader->SetVec3("viewPosition", camera->Position);
     
     phongShader->SetVec3("material.specular",glm::vec3(0.5f, 0.5f, 0.5f));
     phongShader->SetFloat("material.shininess", 64.0f);
 
-    const auto lightColor = glm::vec3(userInterface->lightColor[0],  userInterface->lightColor[1],  userInterface->lightColor[2]);
+    const auto lightColor = userInterface->lightColor;
 
     auto ambient = lightColor * 0.2f;
     auto diffuse = lightColor * 0.5f;
@@ -145,7 +141,7 @@ void Renderer::Render(float deltaTime)
     // light values
     phongShader->SetVec3("light.ambient",  ambient);
     phongShader->SetVec3("light.diffuse",  diffuse);
-    phongShader->SetVec3("light.specular", specular); 
+    phongShader->SetVec3("light.specular", specular);
 
     // mvp
     phongShader->SetMat4("model", model);
@@ -159,22 +155,30 @@ void Renderer::Render(float deltaTime)
         glBindTexture(GL_TEXTURE_2D, texture.first);
     }
 
-    // render textured cube
-    glBindVertexArray(cubeVao);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    model = glm::mat4(1.0f);
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
     
-    model = glm::translate(model, lightPosition);
-    model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
-
-    lightSourceShader->Use();
-    lightSourceShader->SetVec3("lightColor", lightColor);
-    lightSourceShader->SetMat4("model", model);
-    lightSourceShader->SetMat4("view", view);
-    lightSourceShader->SetMat4("projection", projection);
-
-    // render light cube
-    glBindVertexArray(lightCubeVao);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // render textured cubes
+    glBindVertexArray(cubeVao);
+    
+    for(unsigned int i = 0; i < 10; i++)
+    {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, cubePositions[i]);
+        model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0, 1.0f, 1.0f));
+        float angle = 20.0f * i;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        phongShader->SetMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 }
