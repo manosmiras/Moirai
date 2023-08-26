@@ -1,5 +1,8 @@
 ﻿#include "UserInterface.h"
 
+#include <string>
+#include <glm/gtc/type_ptr.inl>
+
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
@@ -16,10 +19,9 @@ UserInterface::UserInterface(Window* window)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window->window, true); // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
     ImGui_ImplOpenGL3_Init();
-    
-    lightColor[0] = 1.0f;
-    lightColor[1] = 1.0f;
-    lightColor[2] = 1.0f;
+
+    lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    lightDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
 }
 
 UserInterface::~UserInterface()
@@ -29,16 +31,32 @@ UserInterface::~UserInterface()
     ImGui::DestroyContext();
 }
 
-void UserInterface::Setup()
+void UserInterface::Setup(float deltaTime)
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-            
-    // Create the UI window
-    ImGui::Begin("Moirai", nullptr, ImGuiWindowFlags_MenuBar);
-    // Edit a color stored as 4 floats
-    ImGui::ColorEdit3("Light Color", lightColor);
+
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Edit"))
+        {
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+
+    ImGui::Begin("Properties");
+    ImGui::LabelText("Frame Time", std::to_string(deltaTime).c_str());
+    float fps = 1.0f / deltaTime;
+    ImGui::LabelText("FPS", std::to_string(fps).c_str());
+    
+    ImGui::ColorEdit3("Light Color",  glm::value_ptr(lightColor));
+    ImGui::DragFloat3("Light Direction", glm::value_ptr(lightDirection));
     ImGui::End();
 }
 

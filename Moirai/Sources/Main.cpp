@@ -15,16 +15,17 @@ int main()
         
         Renderer renderer(window.get(), camera.get(), userInterface.get());
 
-        float lastFrame = 0.0f;
-
+        float previousFrameTime = 0.0f;
+        int frameCount = 0;
         // Engine loop
         while (!window->ShouldClose())
         {
-            const auto currentFrame = static_cast<float>(glfwGetTime());
-            const float deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
+            frameCount++;
+            const auto currentTime = static_cast<float>(glfwGetTime());
+            const float deltaTime = currentTime - previousFrameTime;
+            previousFrameTime = currentTime;
 
-            userInterface->Setup();
+            userInterface->Setup(deltaTime);
             renderer.Render(deltaTime);
             userInterface->Render();
             window->Update(deltaTime);

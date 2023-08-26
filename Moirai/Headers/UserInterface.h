@@ -6,7 +6,8 @@ class UserInterface
 public:
     UserInterface(Window *window);
     ~UserInterface();
-    void Setup();
+    void Setup(float deltaTime);
     void Render();
-    float lightColor[3];
+    glm::vec3 lightColor;
+    glm::vec3 lightDirection;
 };
