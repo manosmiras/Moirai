@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Light.h"
 #include "Window.h"
 
 class UserInterface
@@ -8,6 +9,5 @@ public:
     ~UserInterface();
     void Setup(float deltaTime);
     void Render();
-    glm::vec3 lightColor;
-    glm::vec3 lightDirection;
+    Light light;
 };

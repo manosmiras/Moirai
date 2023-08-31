@@ -22,3 +22,6 @@
 	path = Moirai/Vendor/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "Moirai/Vendor/entt"]
+	path = Moirai/Vendor/entt
+	url = https://github.com/skypjack/entt.git
