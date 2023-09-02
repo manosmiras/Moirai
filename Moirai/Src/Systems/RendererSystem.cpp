@@ -5,6 +5,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "../Texture.h"
+#include "../Components/PointLight.h"
 #include "../Components/Renderer.h"
 #include "../Components/Transform.h"
 
@@ -17,7 +18,7 @@ void RendererSystem::Setup(entt::registry &registry)
         glGenBuffers(1, &renderer.vbo);
 
         glBindBuffer(GL_ARRAY_BUFFER, renderer.vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(renderer.vertices), renderer.vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, renderer.vertices->size() * sizeof(float), renderer.vertices->data(), GL_STATIC_DRAW);
 
         glBindVertexArray(renderer.vao);
  
@@ -73,10 +74,10 @@ void RendererSystem::Update(entt::registry &registry)
     auto specular = lightColor;
 
     // light values
-    shader->SetVec3("light.direction", lightDirection);
-    shader->SetVec3("light.ambient",  ambient);
-    shader->SetVec3("light.diffuse",  diffuse);
-    shader->SetVec3("light.specular", specular);
+    shader->SetVec3("directionalLight.direction", lightDirection);
+    shader->SetVec3("directionalLight.ambient",  ambient);
+    shader->SetVec3("directionalLight.diffuse",  diffuse);
+    shader->SetVec3("directionalLight.specular", specular);
 
     // camera
     shader->SetVec3("viewPosition", camera->Position);
@@ -103,4 +104,20 @@ void RendererSystem::Update(entt::registry &registry)
         glBindVertexArray(renderer.vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     });
+    
+    auto lightView = registry.view<PointLight, Transform>();
+    auto lightIndex = 0;
+    for(auto entity: lightView) {
+        auto &pointLight = lightView.get<PointLight>(entity);
+        auto &transform = lightView.get<Transform>(entity);
+        std::string pointLightUniform = "pointLights[" + std::to_string(lightIndex) + "]";
+        shader->SetVec3(pointLightUniform + ".position", transform.position);
+        shader->SetVec3(pointLightUniform + ".ambient", pointLight.ambient);
+        shader->SetVec3(pointLightUniform + ".diffuse", pointLight.diffuse);
+        shader->SetVec3(pointLightUniform + ".specular", pointLight.specular);
+        shader->SetFloat(pointLightUniform + ".constant", pointLight.constant);
+        shader->SetFloat(pointLightUniform + ".linear", pointLight.linear);
+        shader->SetFloat(pointLightUniform + ".quadratic", pointLight.quadratic);
+        lightIndex++;
+    }
 }

@@ -9,6 +9,9 @@
 #include "entt/entt.hpp"
 #include <random>
 
+#include "VertexUtils.h"
+#include "Components/PointLight.h"
+
 int main()
 {
     try
@@ -30,16 +33,42 @@ int main()
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
-        
+
+        // Cubes
         for (size_t i = 0; i < 10; ++i)
         {
             auto entity = registry.create();
-            registry.emplace<Renderer>(entity, shader.get());
+            registry.emplace<Renderer>(entity, shader.get(), &VertexUtils::cube);
             glm::vec3 position(dist(gen), dist(gen), dist(gen));
             registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
         }
-        RendererSystem rendererSystem;
-        rendererSystem.scene = &scene;
+
+        // Planes
+        for (size_t i = 0; i < 1; ++i)
+        {
+            auto entity = registry.create();
+            registry.emplace<Renderer>(entity, shader.get(), &VertexUtils::plane);
+            glm::vec3 position(dist(gen), dist(gen), dist(gen));
+            registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+        }
+        
+        // Point lights
+        for (size_t i = 0; i < 4; ++i)
+        {
+            auto entity = registry.create();
+            glm::vec3 position(dist(gen), dist(gen), dist(gen));
+            registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+            registry.emplace<PointLight>(
+                entity,
+                shader.get(),
+                1.0f, 0.09f, 0.032f,
+                glm::vec3(0.05f, 0.05f, 0.05f),
+                glm::vec3(0.8f, 0.8f, 0.8f),
+                glm::vec3(1.0f, 1.0f, 1.0f)
+            );
+        }
+        
+        RendererSystem rendererSystem{&scene};
         
         rendererSystem.Setup(registry);
         
