@@ -1,8 +1,10 @@
 ﻿#include "RendererSystem.h"
 
 #include <entt/entity/registry.hpp>
+#include <glm/detail/type_quat.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "../Texture.h"
 #include "../Components/PointLight.h"
@@ -92,7 +94,9 @@ void RendererSystem::Update(entt::registry &registry)
     {
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, transform.position);
-        model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0, 1.0f, 1.0f));
+        glm::quat rotation;
+        rotation = glm::quat(transform.rotation);
+        model *= glm::toMat4(rotation);
         model = glm::scale(model, transform.scale);
         shader->SetMat4("model", model);
         // Bind textures

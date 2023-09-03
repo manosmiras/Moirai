@@ -29,18 +29,22 @@ int main()
 
         entt::registry registry;
 
-        // Generate random values for position within the range of -10 to 10
+        // Generate random position rotation and scale values
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
+        std::uniform_real_distribution<float> positionDist(-10.0f, 10.0f);
+        std::uniform_real_distribution<float> rotationDist(-90.0f, 90.0f);
+        std::uniform_real_distribution<float> scaleDist(1.0f, 2.0f);
 
         // Cubes
         for (size_t i = 0; i < 10; ++i)
         {
             auto entity = registry.create();
             registry.emplace<Renderer>(entity, shader.get(), &VertexUtils::cube);
-            glm::vec3 position(dist(gen), dist(gen), dist(gen));
-            registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+            glm::vec3 position(positionDist(gen), positionDist(gen), positionDist(gen));
+            glm::vec3 rotation(rotationDist(gen), rotationDist(gen), rotationDist(gen));
+            glm::vec3 scale(scaleDist(gen), scaleDist(gen), scaleDist(gen));
+            registry.emplace<Transform>(entity, position, rotation, scale);
         }
 
         // Planes
@@ -48,15 +52,14 @@ int main()
         {
             auto entity = registry.create();
             registry.emplace<Renderer>(entity, shader.get(), &VertexUtils::plane);
-            glm::vec3 position(dist(gen), dist(gen), dist(gen));
-            registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+            registry.emplace<Transform>(entity, glm::vec3(0.0f, -20.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f));
         }
         
         // Point lights
         for (size_t i = 0; i < 4; ++i)
         {
             auto entity = registry.create();
-            glm::vec3 position(dist(gen), dist(gen), dist(gen));
+            glm::vec3 position(positionDist(gen), positionDist(gen), positionDist(gen));
             registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
             registry.emplace<PointLight>(
                 entity,
