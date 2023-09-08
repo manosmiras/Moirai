@@ -3,12 +3,10 @@
 #include <map>
 
 #include "../Shader.h"
+#include "../Model.h"
 
 struct Renderer
 {
     Shader* shader;
-    std::vector<float>* vertices;
-    unsigned int vao;
-    unsigned int vbo;
-    std::map<GLuint, int> textures;
+    Model* model;
 };

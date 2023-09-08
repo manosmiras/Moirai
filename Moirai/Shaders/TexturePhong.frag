@@ -48,9 +48,9 @@ void main()
     // Directional light
     vec3 combinedLights = CalculateDirectionalLight(directionalLight, normalizedNormal, viewDirection);
     // Point lights
-    for(int i = 0; i < POINT_LIGHT_COUNT; i++){
+    /*for(int i = 0; i < POINT_LIGHT_COUNT; i++){
         combinedLights += CalculatePointLight(pointLights[i], normalizedNormal, fragPosition, viewDirection);
-    }
+    }*/
     fragColor = vec4(combinedLights, 1.0);
 }
 

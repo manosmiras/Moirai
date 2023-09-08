@@ -13,7 +13,7 @@
 
 void RendererSystem::Setup(entt::registry &registry)
 {
-    auto view = registry.view<Renderer>();
+    /*auto view = registry.view<Renderer>();
     view.each([](Renderer &renderer)
     {
         glGenVertexArrays(1, &renderer.vao);
@@ -47,7 +47,7 @@ void RendererSystem::Setup(entt::registry &registry)
         renderer.shader->Use();
         renderer.shader->SetInt("material.diffuse", 0);
         renderer.shader->SetInt("material.specular", 1);
-    });
+    });*/
     
     glEnable(GL_DEPTH_TEST);
 }
@@ -99,14 +99,15 @@ void RendererSystem::Update(entt::registry &registry)
         model *= glm::toMat4(rotation);
         model = glm::scale(model, transform.scale);
         shader->SetMat4("model", model);
-        // Bind textures
+        renderer.model->Draw(shader);
+        /*// Bind textures
         for (const auto &texture : renderer.textures)
         {
             glActiveTexture(texture.second);
             glBindTexture(GL_TEXTURE_2D, texture.first);
         }
         glBindVertexArray(renderer.vao);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_TRIANGLES, 0, 36);*/
     });
     
     auto lightView = registry.view<PointLight, Transform>();

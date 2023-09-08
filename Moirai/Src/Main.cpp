@@ -8,6 +8,7 @@
 #include "Components/Transform.h"
 #include "entt/entt.hpp"
 #include <random>
+#include <stb_image.h>
 
 #include "VertexUtils.h"
 #include "Components/PointLight.h"
@@ -16,6 +17,7 @@ int main()
 {
     try
     {
+        stbi_set_flip_vertically_on_load(true);
         auto camera = std::make_unique<Camera>();
         auto window = std::make_unique<Window>(camera.get());
         auto userInterface = std::make_unique<UserInterface>(window.get());
@@ -32,11 +34,21 @@ int main()
         // Generate random position rotation and scale values
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> positionDist(-10.0f, 10.0f);
-        std::uniform_real_distribution<float> rotationDist(-90.0f, 90.0f);
-        std::uniform_real_distribution<float> scaleDist(1.0f, 2.0f);
+        std::uniform_real_distribution positionDist(-10.0f, 10.0f);
+        std::uniform_real_distribution rotationDist(-90.0f, 90.0f);
+        std::uniform_real_distribution scaleDist(1.0f, 2.0f);
 
-        // Cubes
+        auto model = Model("../Moirai/Resources/backpack/backpack.obj");
+
+        // Meshes
+        for (size_t i = 0; i < 1; ++i)
+        {
+            auto entity = registry.create();
+            registry.emplace<Renderer>(entity, shader.get(), &model);
+            registry.emplace<Transform>(entity, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
+        }
+
+        /*// Cubes
         for (size_t i = 0; i < 10; ++i)
         {
             auto entity = registry.create();
@@ -69,7 +81,7 @@ int main()
                 glm::vec3(0.8f, 0.8f, 0.8f),
                 glm::vec3(1.0f, 1.0f, 1.0f)
             );
-        }
+        }*/
         
         RendererSystem rendererSystem{&scene};
         
