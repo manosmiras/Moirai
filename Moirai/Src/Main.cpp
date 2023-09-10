@@ -1,16 +1,14 @@
 #include <iostream>
 #include <ostream>
 
-#include "Systems/RendererSystem.h"
+#include "Systems/MeshRendererSystem.h"
 #include "Window.h"
 #include "UserInterface.h"
-#include "Components/Renderer.h"
+#include "Components/MeshRenderer.h"
 #include "Components/Transform.h"
 #include "entt/entt.hpp"
 #include <random>
 #include <stb_image.h>
-
-#include "VertexUtils.h"
 #include "Components/PointLight.h"
 
 int main()
@@ -38,14 +36,14 @@ int main()
         std::uniform_real_distribution rotationDist(-90.0f, 90.0f);
         std::uniform_real_distribution scaleDist(1.0f, 2.0f);
 
-        auto model = Model("../Moirai/Resources/backpack/backpack.obj");
-
         // Meshes
-        for (size_t i = 0; i < 1; ++i)
+        for (size_t i = 0; i < 10; ++i)
         {
+            glm::vec3 position(positionDist(gen), positionDist(gen), positionDist(gen));
+            glm::vec3 rotation(rotationDist(gen), rotationDist(gen), rotationDist(gen));
             auto entity = registry.create();
-            registry.emplace<Renderer>(entity, shader.get(), &model);
-            registry.emplace<Transform>(entity, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
+            registry.emplace<MeshRenderer>(entity, shader.get(), "../Moirai/Resources/backpack/backpack2.obj");
+            registry.emplace<Transform>(entity, position, rotation, glm::vec3(1.0f));
         }
 
         /*// Cubes
@@ -83,7 +81,7 @@ int main()
             );
         }*/
         
-        RendererSystem rendererSystem{&scene};
+        MeshRendererSystem rendererSystem{&scene};
         
         rendererSystem.Setup(registry);
         
