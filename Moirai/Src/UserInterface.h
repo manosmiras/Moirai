@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <memory>
+
 #include "Light.h"
 #include "Window.h"
 
@@ -9,5 +11,5 @@ public:
     ~UserInterface();
     void Setup(float deltaTime);
     void Render();
-    Light light;
+    std::unique_ptr<Light> light;
 };

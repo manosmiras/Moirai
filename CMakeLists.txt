@@ -44,7 +44,9 @@ file(GLOB PROJECT_SRC Moirai/Src/*.cpp
 		      Moirai/Src/Components/*.cpp
 		      Moirai/Src/Components/*.h
 		      Moirai/Src/Systems/*.cpp
-		      Moirai/Src/Systems/*.h)
+		      Moirai/Src/Systems/*.h
+		      Moirai/Src/Renderer/*.cpp
+		      Moirai/Src/Renderer/*.h)
 
 file(GLOB PROJECT_SHADERS Moirai/Shaders/*.comp
                           Moirai/Shaders/*.frag

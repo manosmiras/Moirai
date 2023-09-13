@@ -5,12 +5,13 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-
-Texture::Texture(const std::string& filepath, GLuint& textureId)
+#define stringify( name ) #name
+Texture::Texture(const std::string& filepath, TextureType textureType)
 {
+    this->textureType = textureType;
     stbi_set_flip_vertically_on_load(true);  
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -39,4 +40,21 @@ Texture::Texture(const std::string& filepath, GLuint& textureId)
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
+}
+
+std::string Texture::GetSamplerName(int index)
+{
+    
+    return "material" + std::to_string(index) + "." + stringify(textureType);
+}
+
+void Texture::Activate(int index)
+{
+    glActiveTexture(GL_TEXTURE0 + index);
+}
+
+void Texture::Bind()
+{
+    // shader->SetInt(("material" + number + "." + name).c_str(), i);
+    glBindTexture(GL_TEXTURE_2D, id);
 }

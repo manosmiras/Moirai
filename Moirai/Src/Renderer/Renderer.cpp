@@ -1,24 +1,22 @@
-﻿#include "MeshRendererSystem.h"
-
+﻿#include "Renderer.h"
+#include "../Components/MeshRenderer.h"
+#include "../Components/Transform.h"
 #include <entt/entity/registry.hpp>
-#include <glm/detail/type_quat.hpp>
+#include <glad/glad.h>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "../Renderer/Texture.h"
-#include "../Components/PointLight.h"
-#include "../Components/MeshRenderer.h"
-#include "../Components/Transform.h"
-#include "assimp/Importer.hpp"
-
-void MeshRendererSystem::Setup(entt::registry& registry)
+Renderer::Renderer(Scene* scene)
 {
 	glEnable(GL_DEPTH_TEST);
+	this->scene = scene;
 }
 
-void MeshRendererSystem::Update(entt::registry& registry)
+void Renderer::Render()
 {
+	entt::registry& registry = scene->registry;
+
 	auto view = registry.view<MeshRenderer, Transform>();
 
 	glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -66,6 +64,13 @@ void MeshRendererSystem::Update(entt::registry& registry)
 		model = glm::scale(model, transform.scale);
 		shader->SetMat4("model", model);
 		renderer.mesh->Draw();
+		for(int i = 0; i < renderer.textures.size(); ++i)
+		{
+			auto texture = renderer.textures[i];
+			texture->Activate(i);
+			renderer.shader->SetInt(texture->GetSamplerName(i), i);
+			texture->Bind();
+		}
 		/*unsigned int diffuseIndex = 1;
 		unsigned int specularIndex = 1;
 		for(unsigned int i = 0; i < renderer.textures.size(); i++)

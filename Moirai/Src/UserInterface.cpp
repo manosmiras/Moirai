@@ -1,5 +1,6 @@
 ﻿#include "UserInterface.h"
 
+#include <memory>
 #include <string>
 #include <glm/gtc/type_ptr.inl>
 
@@ -19,9 +20,9 @@ UserInterface::UserInterface(Window* window)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window->window, true); // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
     ImGui_ImplOpenGL3_Init();
-
-    light.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-    light.lightDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
+    light = std::make_unique<Light>();
+    light->lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    light->lightDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
 }
 
 UserInterface::~UserInterface()
@@ -55,8 +56,8 @@ void UserInterface::Setup(float deltaTime)
     float fps = 1.0f / deltaTime;
     ImGui::LabelText("FPS", std::to_string(fps).c_str());
     
-    ImGui::ColorEdit3("Light Color",  glm::value_ptr(light.lightColor));
-    ImGui::DragFloat3("Light Direction", glm::value_ptr(light.lightDirection));
+    ImGui::ColorEdit3("Light Color",  glm::value_ptr(light->lightColor));
+    ImGui::SliderFloat3("Light Direction", glm::value_ptr(light->lightDirection), -1.0f, 1.0f);
     ImGui::End();
 }
 

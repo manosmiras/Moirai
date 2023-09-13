@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <glm/vec3.hpp>
-#include "../Shader.h"
+#include "../Renderer/Shader.h"
 struct PointLight
 {
 	Shader* shader;
