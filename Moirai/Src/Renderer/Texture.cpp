@@ -6,9 +6,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define stringify( name ) #name
-Texture::Texture(const std::string& filepath, TextureType textureType)
+Texture::Texture(const std::string& filepath, TextureType textureType, glm::vec2 uvScale)
 {
     this->textureType = textureType;
+    this->uvScale = uvScale;
     stbi_set_flip_vertically_on_load(true);  
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
@@ -44,7 +45,6 @@ Texture::Texture(const std::string& filepath, TextureType textureType)
 
 std::string Texture::GetSamplerName(int index)
 {
-    
     return "material" + std::to_string(index) + "." + stringify(textureType);
 }
 
@@ -55,6 +55,5 @@ void Texture::Activate(int index)
 
 void Texture::Bind()
 {
-    // shader->SetInt(("material" + number + "." + name).c_str(), i);
     glBindTexture(GL_TEXTURE_2D, id);
 }

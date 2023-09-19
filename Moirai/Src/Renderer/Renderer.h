@@ -6,7 +6,7 @@ class Renderer
 {
 public:
 	Renderer(Scene* scene);
-	void Render();
+	void Render(float deltaTime);
 private:
 	Scene* scene;
 };

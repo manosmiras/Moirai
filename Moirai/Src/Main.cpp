@@ -1,15 +1,12 @@
 #include <iostream>
 #include <ostream>
-
-#include "Systems/MeshRendererSystem.h"
+#include "entt/entt.hpp"
 #include "Window.h"
 #include "UserInterface.h"
 #include "Components/MeshRenderer.h"
 #include "Components/Transform.h"
-#include "entt/entt.hpp"
 #include <random>
 #include <stb_image.h>
-#include "Components/PointLight.h"
 #include "Renderer/Renderer.h"
 
 int main()
@@ -40,58 +37,49 @@ int main()
 		std::uniform_real_distribution scaleDist(1.0f, 2.0f);
 
 		auto mesh = std::make_unique<Mesh>("../Moirai/Resources/backpack/backpack2.obj");
+		auto plane = std::make_unique<Mesh>("../Moirai/Resources/meshes/plane.obj");
 
-		auto diffuse = std::make_unique<Texture>("../Moirai/Resources/backpack/diffuse.jpg", Diffuse);
-		auto specular = std::make_unique<Texture>("../Moirai/Resources/backpack/specular.jpg", Specular);
-		
-		std::vector<Texture*> textures;
-		textures.push_back(diffuse.get());
-		textures.push_back(specular.get());
-		
-		// Meshes
-		for (size_t i = 0; i < 10; ++i)
-		{
-			glm::vec3 position(positionDist(gen), positionDist(gen), positionDist(gen));
-			glm::vec3 rotation(rotationDist(gen), rotationDist(gen), rotationDist(gen));
-			auto entity = registry.create();
-			registry.emplace<MeshRenderer>(entity, shader.get(), mesh.get(), textures);
-			registry.emplace<Transform>(entity, position, rotation, glm::vec3(1.0f));
-		}
+		auto diffuse = std::make_unique<Texture>("../Moirai/Resources/backpack/diffuse.jpg", Diffuse, glm::vec2(1.0f));
+		auto specular = std::make_unique<Texture>("../Moirai/Resources/backpack/specular.jpg", Specular, glm::vec2(1.0f));
 
-		/*// Cubes
-		for (size_t i = 0; i < 10; ++i)
-		{
-		    auto entity = registry.create();
-		    registry.emplace<Renderer>(entity, shader.get(), &VertexUtils::cube);
-		    glm::vec3 position(positionDist(gen), positionDist(gen), positionDist(gen));
-		    glm::vec3 rotation(rotationDist(gen), rotationDist(gen), rotationDist(gen));
-		    glm::vec3 scale(scaleDist(gen), scaleDist(gen), scaleDist(gen));
-		    registry.emplace<Transform>(entity, position, rotation, scale);
-		}
-
-		// Planes
-		for (size_t i = 0; i < 1; ++i)
-		{
-		    auto entity = registry.create();
-		    registry.emplace<Renderer>(entity, shader.get(), &VertexUtils::plane);
-		    registry.emplace<Transform>(entity, glm::vec3(0.0f, -20.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1000.0f));
-		}
+		auto map = std::make_unique<Texture>("../Moirai/Textures/uv_map.jpg", Diffuse, glm::vec2(10.0f));
 		
+		std::vector<Texture*> meshTextures;
+		meshTextures.push_back(diffuse.get());
+		meshTextures.push_back(specular.get());
+
+		std::vector<Texture*> planeTextures;
+		planeTextures.push_back(map.get());
+
+		glm::vec3 meshPosition(1.0f);
+		glm::vec3 rotation(0.0f);
+		
+		auto meshEntity = registry.create();
+		registry.emplace<MeshRenderer>(meshEntity, shader.get(), mesh.get(), meshTextures);
+		registry.emplace<Transform>(meshEntity, meshPosition, rotation, glm::vec3(1.0f));
+
+		glm::vec3 planePosition(0.0f, -10.0f, 0.0f);
+		
+		auto planeEntity = registry.create();
+		registry.emplace<MeshRenderer>(planeEntity, shader.get(), plane.get(), planeTextures);
+		registry.emplace<Transform>(planeEntity, planePosition, rotation, glm::vec3(100.0f));
+
 		// Point lights
-		for (size_t i = 0; i < 4; ++i)
+		/*for (size_t i = 0; i < 4; ++i)
 		{
-		    auto entity = registry.create();
-		    glm::vec3 position(positionDist(gen), positionDist(gen), positionDist(gen));
-		    registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
-		    registry.emplace<PointLight>(
-		        entity,
-		        shader.get(),
-		        1.0f, 0.09f, 0.032f,
-		        glm::vec3(0.05f, 0.05f, 0.05f),
-		        glm::vec3(0.8f, 0.8f, 0.8f),
-		        glm::vec3(1.0f, 1.0f, 1.0f)
-		    );
+			auto entity = registry.create();
+			glm::vec3 position(positionDist(gen), positionDist(gen), positionDist(gen));
+			registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+			registry.emplace<PointLight>(
+				entity,
+				shader.get(),
+				1.0f, 0.09f, 0.032f,
+				glm::vec3(0.05f, 0.05f, 0.05f),
+				glm::vec3(0.8f, 0.8f, 0.8f),
+				glm::vec3(1.0f, 1.0f, 1.0f)
+			);
 		}*/
+		
 		Renderer renderer(&scene);
 
 		float previousFrameTime = 0.0f;
@@ -105,7 +93,7 @@ int main()
 			previousFrameTime = currentTime;
 
 			userInterface->Setup(deltaTime);
-			renderer.Render();
+			renderer.Render(deltaTime);
 			userInterface->Render();
 			window->Update(deltaTime);
 		}

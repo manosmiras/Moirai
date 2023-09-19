@@ -1,6 +1,7 @@
 ﻿#include "Renderer.h"
 #include "../Components/MeshRenderer.h"
 #include "../Components/Transform.h"
+#include "../Components/PointLight.h"
 #include <entt/entity/registry.hpp>
 #include <glad/glad.h>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -13,7 +14,7 @@ Renderer::Renderer(Scene* scene)
 	this->scene = scene;
 }
 
-void Renderer::Render()
+void Renderer::Render(float deltaTime)
 {
 	entt::registry& registry = scene->registry;
 
@@ -48,46 +49,33 @@ void Renderer::Render()
 	shader->SetVec3("viewPosition", camera->Position);
 
 	// view and projection matrices
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera->Zoom), window->GetAspectRatio(), 0.1f,
-	                                              100.0f);
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera->Zoom), window->GetAspectRatio(), 0.1f, 1000.0f);
 	auto viewMatrix = camera->GetViewMatrix();
 	shader->SetMat4("view", viewMatrix);
 	shader->SetMat4("projection", projectionMatrix);
 
-	view.each([shader](MeshRenderer& renderer, Transform& transform)
+	view.each([deltaTime](MeshRenderer& renderer, Transform& transform)
 	{
 		auto model = glm::mat4(1.0f);
 		model = glm::translate(model, transform.position);
 		glm::quat rotation;
+		transform.rotation.y += deltaTime * 0.5f;
 		rotation = glm::quat(transform.rotation);
 		model *= glm::toMat4(rotation);
 		model = glm::scale(model, transform.scale);
-		shader->SetMat4("model", model);
-		renderer.mesh->Draw();
-		for(int i = 0; i < renderer.textures.size(); ++i)
+		renderer.shader->SetMat4("model", model);
+		
+		for(int i = 0; i < renderer.textures.size(); i++)
 		{
 			auto texture = renderer.textures[i];
 			texture->Activate(i);
 			renderer.shader->SetInt(texture->GetSamplerName(i), i);
+			renderer.shader->SetVec2("uvScale", texture->uvScale);
 			texture->Bind();
 		}
-		/*unsigned int diffuseIndex = 1;
-		unsigned int specularIndex = 1;
-		for(unsigned int i = 0; i < renderer.textures.size(); i++)
-		{
-			glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-			// retrieve texture number (the N in diffuse_textureN)
-			std::string number;
-			std::string name = renderer.textures[i].type;
-			if(name == "diffuse")
-				number = std::to_string(diffuseIndex++);
-			else if(name == "specular")
-				number = std::to_string(specularIndex++);
-
-			shader->SetInt(("material" + number + "." + name).c_str(), i);
-			glBindTexture(GL_TEXTURE_2D, renderer.textures[i].id);
-		}
-		glActiveTexture(GL_TEXTURE0);*/
+		renderer.mesh->Draw();
+		
+		glActiveTexture(GL_TEXTURE0);
 	});
 
 	/*auto lightView = registry.view<PointLight, Transform>();
