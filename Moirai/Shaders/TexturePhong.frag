@@ -23,7 +23,7 @@ struct PointLight {
     vec3 diffuse;
     vec3 specular;
 };
-#define POINT_LIGHT_COUNT 4
+#define POINT_LIGHT_COUNT 3
 uniform PointLight pointLights[POINT_LIGHT_COUNT];
 
 out vec4 fragColor;
@@ -48,9 +48,9 @@ void main()
     // Directional light
     vec3 combinedLights = CalculateDirectionalLight(directionalLight, normalizedNormal, viewDirection);
     // Point lights
-    /*for(int i = 0; i < POINT_LIGHT_COUNT; i++){
+    for(int i = 0; i < POINT_LIGHT_COUNT; i++){
         combinedLights += CalculatePointLight(pointLights[i], normalizedNormal, fragPosition, viewDirection);
-    }*/
+    }
     fragColor = vec4(combinedLights, 1.0);
 }
 

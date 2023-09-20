@@ -54,12 +54,38 @@ void Renderer::Render(float deltaTime)
 	shader->SetMat4("view", viewMatrix);
 	shader->SetMat4("projection", projectionMatrix);
 
+	auto lightView = registry.view<PointLight, Transform>();
+	auto lightIndex = 0;
+	for(auto entity: lightView) {
+		auto &pointLight = lightView.get<PointLight>(entity);
+		auto &transform = lightView.get<Transform>(entity);
+
+		auto model = glm::mat4(1.0f);
+		//transform.position.x = sin(glfwGetTime()) * 10.0f;
+		model = glm::translate(model, transform.position);
+		glm::quat rotation;
+		rotation = glm::quat(transform.rotation);
+		model *= glm::toMat4(rotation);
+		model = glm::scale(model, transform.scale);
+		shader->SetMat4("model", model);
+		
+		std::string pointLightUniform = "pointLights[" + std::to_string(lightIndex) + "]";
+		shader->SetVec3(pointLightUniform + ".position", transform.position);
+		shader->SetVec3(pointLightUniform + ".ambient", pointLight.ambient);
+		shader->SetVec3(pointLightUniform + ".diffuse", pointLight.diffuse);
+		shader->SetVec3(pointLightUniform + ".specular", pointLight.specular);
+		shader->SetFloat(pointLightUniform + ".constant", pointLight.constant);
+		shader->SetFloat(pointLightUniform + ".linear", pointLight.linear);
+		shader->SetFloat(pointLightUniform + ".quadratic", pointLight.quadratic);
+		lightIndex++;
+	}
+
 	view.each([deltaTime](MeshRenderer& renderer, Transform& transform)
 	{
 		auto model = glm::mat4(1.0f);
 		model = glm::translate(model, transform.position);
 		glm::quat rotation;
-		transform.rotation.y += deltaTime * 0.5f;
+		//transform.rotation.y += deltaTime * 0.5f;
 		rotation = glm::quat(transform.rotation);
 		model *= glm::toMat4(rotation);
 		model = glm::scale(model, transform.scale);
@@ -77,20 +103,4 @@ void Renderer::Render(float deltaTime)
 		
 		glActiveTexture(GL_TEXTURE0);
 	});
-
-	/*auto lightView = registry.view<PointLight, Transform>();
-	auto lightIndex = 0;
-	for(auto entity: lightView) {
-	    auto &pointLight = lightView.get<PointLight>(entity);
-	    auto &transform = lightView.get<Transform>(entity);
-	    std::string pointLightUniform = "pointLights[" + std::to_string(lightIndex) + "]";
-	    shader->SetVec3(pointLightUniform + ".position", transform.position);
-	    shader->SetVec3(pointLightUniform + ".ambient", pointLight.ambient);
-	    shader->SetVec3(pointLightUniform + ".diffuse", pointLight.diffuse);
-	    shader->SetVec3(pointLightUniform + ".specular", pointLight.specular);
-	    shader->SetFloat(pointLightUniform + ".constant", pointLight.constant);
-	    shader->SetFloat(pointLightUniform + ".linear", pointLight.linear);
-	    shader->SetFloat(pointLightUniform + ".quadratic", pointLight.quadratic);
-	    lightIndex++;
-	}*/
 }

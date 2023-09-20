@@ -5,6 +5,7 @@
 #include "UserInterface.h"
 #include "Components/MeshRenderer.h"
 #include "Components/Transform.h"
+#include "Components/PointLight.h"
 #include <random>
 #include <stb_image.h>
 #include "Renderer/Renderer.h"
@@ -64,21 +65,23 @@ int main()
 		registry.emplace<MeshRenderer>(planeEntity, shader.get(), plane.get(), planeTextures);
 		registry.emplace<Transform>(planeEntity, planePosition, rotation, glm::vec3(100.0f));
 
+		glm::vec3 colors[] = {glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 0, 1)};
+
 		// Point lights
-		/*for (size_t i = 0; i < 4; ++i)
+		for (size_t i = 0; i < 3; ++i)
 		{
 			auto entity = registry.create();
-			glm::vec3 position(positionDist(gen), positionDist(gen), positionDist(gen));
+			glm::vec3 position(positionDist(gen), -10.0f, positionDist(gen));
 			registry.emplace<Transform>(entity, position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
 			registry.emplace<PointLight>(
 				entity,
 				shader.get(),
 				1.0f, 0.09f, 0.032f,
-				glm::vec3(0.05f, 0.05f, 0.05f),
-				glm::vec3(0.8f, 0.8f, 0.8f),
-				glm::vec3(1.0f, 1.0f, 1.0f)
+				colors[i] * 0.5f,
+				colors[i] * 0.8f,
+				colors[i]
 			);
-		}*/
+		}
 		
 		Renderer renderer(&scene);
 
