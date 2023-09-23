@@ -38,16 +38,19 @@ Window::Window(Camera* camera)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    width = 800;
-    height = 600;
-    
+    auto monitor = glfwGetPrimaryMonitor();
+    int xPos, yPos;
+    glfwGetMonitorWorkarea(monitor, &xPos, &yPos, &width, &height);
+    width = static_cast<int>(width * 0.8);
+    height = static_cast<int>(height * 0.8);
     window = glfwCreateWindow(width, height, "Moirai", nullptr, nullptr);
+
     if (window == nullptr)
     {
         glfwTerminate();
         throw std::exception("Failed to create GLFW window");
     }
-	
+    
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
     gladLoadGL();

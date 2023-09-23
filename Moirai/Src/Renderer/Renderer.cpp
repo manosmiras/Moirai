@@ -12,6 +12,7 @@ Renderer::Renderer(Scene* scene)
 {
 	glEnable(GL_DEPTH_TEST);
 	this->scene = scene;
+	this->frameBuffer = std::make_unique<FrameBuffer>(800, 600);
 }
 
 void Renderer::Render(float deltaTime)
@@ -19,12 +20,11 @@ void Renderer::Render(float deltaTime)
 	entt::registry& registry = scene->registry;
 
 	auto view = registry.view<MeshRenderer, Transform>();
-
-	glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+	frameBuffer->Bind();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	auto camera = scene->camera;
-	auto window = scene->window;
 	auto lightDirection = scene->light->lightDirection;
 	auto lightColor = scene->light->lightColor;
 
@@ -49,7 +49,8 @@ void Renderer::Render(float deltaTime)
 	shader->SetVec3("viewPosition", camera->Position);
 
 	// view and projection matrices
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera->Zoom), window->GetAspectRatio(), 0.1f, 1000.0f);
+	float aspectRatio = static_cast<float>(frameBuffer->width) / static_cast<float>(frameBuffer->height);
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera->Zoom), aspectRatio, 0.1f, 1000.0f);
 	auto viewMatrix = camera->GetViewMatrix();
 	shader->SetMat4("view", viewMatrix);
 	shader->SetMat4("projection", projectionMatrix);
@@ -100,7 +101,7 @@ void Renderer::Render(float deltaTime)
 			texture->Bind();
 		}
 		renderer.mesh->Draw();
-		
-		glActiveTexture(GL_TEXTURE0);
 	});
+	glUseProgram(0);
+	frameBuffer->Unbind();
 }

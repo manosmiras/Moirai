@@ -94,10 +94,8 @@ int main()
 			const auto currentTime = static_cast<float>(glfwGetTime());
 			const float deltaTime = currentTime - previousFrameTime;
 			previousFrameTime = currentTime;
-
-			userInterface->Setup(deltaTime);
 			renderer.Render(deltaTime);
-			userInterface->Render();
+			userInterface->Render(deltaTime, renderer.frameBuffer.get());
 			window->Update(deltaTime);
 		}
 	}

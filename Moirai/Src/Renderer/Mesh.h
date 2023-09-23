@@ -2,6 +2,7 @@
 #include <vector>
 #include "Vertex.h"
 #include "assimp/scene.h"
+#include <glad/glad.h>
 
 class Mesh
 {
@@ -12,5 +13,5 @@ private:
 	void ProcessMesh(aiMesh* mesh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-	unsigned int vao, vbo, ebo;
+	GLuint vao, vbo, ebo;
 };
