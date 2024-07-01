@@ -1,5 +1,5 @@
 # Moirai
-A game engine built with OpenGL and C++.
+A real time renderer built with OpenGL and C++.
 
 ## Getting started
 1. Clone the project
